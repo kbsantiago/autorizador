@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: miniautorizador
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      username: user
+      password: password
+      database: miniautorizador
+
+
