@@ -98,7 +98,7 @@ class CardControllerTest {
         cardEntity = CardEntity.builder().cardNumber("invalidCardNumber").password("12").build();
         when(cardService.create(any(CardEntity.class))).thenReturn(Optional.of(cardEntity));
         when(cardService.create(any(CardEntity.class))).thenThrow(
-                new CardAlreadyExistsException(MsgProperties.CARD_DOES_NOT_EXISTS));
+                new CardAlreadyExistsException(MsgProperties.CARD_ALREADY_EXISTS));
 
         mockMvc.perform(post("/cartoes")
                         .contentType(MediaType.APPLICATION_JSON)
