@@ -20,11 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -79,8 +76,8 @@ class CardControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String json = result.getResponse().getContentAsString();
-                    BigDecimal balance = objectMapper.readValue(json, BigDecimal.class);
-                    assertThat(balance).isEqualTo(balance);
+                    BigDecimal newBalance = objectMapper.readValue(json, BigDecimal.class);
+                    assertThat(newBalance).isEqualTo(balance);
                 });
     }
 

@@ -29,9 +29,7 @@ public class TransactionService {
 
     private CardEntity getCardByNumber(final String cardNumber) {
         try {
-            return cardService.getByNumber(cardNumber).orElseThrow(() -> {
-                throw new InvalidCardException(JsonUtil.toJson(TransactionStatus.CARTAO_INEXISTENTE));
-            });
+            return cardService.getByNumber(cardNumber).get();
         } catch (CardNotFoundException e) {
             throw new InvalidCardException(JsonUtil.toJson(TransactionStatus.CARTAO_INEXISTENTE));
         }

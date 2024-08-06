@@ -16,48 +16,12 @@ import org.springframework.web.client.HttpClientErrorException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final int INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
-    private static final int FORBIDDEN_STATUS_CODE = 403;
-    private static final int BAD_REQUEST_STATUS_CODE = 400;
-
-    private static final String MANDATORY_PARAM_ERROR_MESSAGE = "O parâmetro \"%s\" é obrigatório.";
-    private static final String MANDATORY_HEADER_ERROR_MESSAGE = "O header \"%s\" é obrigatório.";
 
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<Error> globalExceptionHandler(final RuntimeException exception) {
         return ResponseEntity.internalServerError().body(
                 new Error(INTERNAL_SERVER_ERROR_STATUS_CODE, exception.getMessage())
         );
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    ResponseEntity<Error> missingServletRequestParameterExceptionHandler(
-            final MissingServletRequestParameterException exception
-    ) {
-        return ResponseEntity.badRequest().body(
-                new Error(
-                        BAD_REQUEST_STATUS_CODE,
-                        String.format(MANDATORY_PARAM_ERROR_MESSAGE, exception.getParameterName())
-                )
-        );
-    }
-
-    @ExceptionHandler(MissingRequestHeaderException.class)
-    ResponseEntity<Error> missingRequestHeaderExceptionHandler(final MissingRequestHeaderException exception) {
-        return ResponseEntity.badRequest().body(
-                new Error(
-                        BAD_REQUEST_STATUS_CODE,
-                        String.format(MANDATORY_HEADER_ERROR_MESSAGE, exception.getHeaderName())
-                )
-        );
-    }
-
-    @ExceptionHandler(HttpClientErrorException.class)
-    ResponseEntity<Error> httpClientErrorException(final HttpClientErrorException httpClientErrorException) {
-        HttpStatusCode errorCode = httpClientErrorException.getStatusCode();
-        return ResponseEntity
-                .status(errorCode)
-                .body(new Error(errorCode.value(),httpClientErrorException.getMessage())
-                );
     }
 
     @ExceptionHandler(InvalidCardException.class)
