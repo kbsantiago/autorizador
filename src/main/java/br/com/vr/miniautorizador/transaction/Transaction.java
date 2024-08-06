@@ -1,23 +1,24 @@
 package br.com.vr.miniautorizador.transaction;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public record Transaction (
+    @JsonProperty("numeroCartao")
     @NotNull
-    @NotEmpty(message = "Card number is required.")
-    @NotBlank(message = "Card number is required.")
-    @Pattern(regexp = "^[0-9]{13,19}$", message="Invalid card number. Must be a sequence of 13 to 19 digits.")
+    @NotEmpty(message = "Número do cartão é obrigatório.")
+    @NotBlank(message = "Número do cartão é obrigatório.")
+    @Pattern(regexp = "^[0-9]{13,19}$", message="Número do cartão é inválido. Deve ter uma sequência entre 13 a 19 dígitos.")
     String cardNumber,
+    @JsonProperty("senha")
     @NotNull
-    @NotEmpty(message = "Password is required.")
-    @NotBlank(message = "Password is required.")
-    @Pattern(regexp = "^[0-9]{4}$", message="Invalid input. Must be exactly 4 digits.")
+    @NotEmpty(message = "Senha é obrigatória.")
+    @NotBlank(message = "Senha é obrigatória.")
+    @Pattern(regexp = "^[0-9]{4}$", message="Senha inválida.Deve ter exatamente 4 dígitos.")
     String password,
-    @NotNull
-    @NotEmpty(message = "Amount is required.")
-    @NotBlank(message = "Amount is required.")
-    @Min(value = 0, message = "Amount must be greater than zero.")
+    @JsonProperty("valor")
+    @Min(value = 1, message = "Deve ser maior que 0.")
     BigDecimal amount
 ){}

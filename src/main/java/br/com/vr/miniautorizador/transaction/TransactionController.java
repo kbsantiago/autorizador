@@ -1,6 +1,7 @@
 package br.com.vr.miniautorizador.transaction;
 
 import br.com.vr.miniautorizador.common.openapi.TransactionApi;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

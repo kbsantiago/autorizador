@@ -20,7 +20,7 @@ public class CardService {
         cardRepository.findByCardNumber(cardEntity.getCardNumber())
                 .ifPresent(card -> {
                     throw new CardAlreadyExistsException(
-                            JsonUtil.toJson(CardMapper.INSTANCE.convertWithoutBalance(cardEntity))
+                            JsonUtil.toJson(CardMapper.INSTANCE.convertWithoutBalance(card))
                     );
                 });
 
