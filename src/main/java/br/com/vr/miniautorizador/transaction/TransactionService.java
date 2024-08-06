@@ -2,6 +2,8 @@ package br.com.vr.miniautorizador.transaction;
 
 import br.com.vr.miniautorizador.card.CardEntity;
 import br.com.vr.miniautorizador.card.CardService;
+import br.com.vr.miniautorizador.card.exceptions.CardNotFoundException;
+import br.com.vr.miniautorizador.common.util.JsonUtil;
 import br.com.vr.miniautorizador.transaction.exceptions.InsufficientBalanceException;
 import br.com.vr.miniautorizador.transaction.exceptions.InvalidCardException;
 import br.com.vr.miniautorizador.transaction.exceptions.InvalidPasswordException;
@@ -26,21 +28,24 @@ public class TransactionService {
     }
 
     private CardEntity getCardByNumber(final String cardNumber) {
-        return cardService.getByNumber(cardNumber)
-                .orElseThrow(() -> {
-                    throw new InvalidCardException(TransactionStatus.NON_EXISTENT_CARD.getMessage());
-                });
+        try {
+            return cardService.getByNumber(cardNumber).orElseThrow(() -> {
+                throw new InvalidCardException(JsonUtil.toJson(TransactionStatus.CARTAO_INEXISTENTE));
+            });
+        } catch (CardNotFoundException e) {
+            throw new InvalidCardException(JsonUtil.toJson(TransactionStatus.CARTAO_INEXISTENTE));
+        }
     }
 
     private void validateProvidedPassword(final String providedPassword) {
        if(!cardEntity.getPassword().equals(providedPassword)) {
-           throw new InvalidPasswordException(TransactionStatus.INVALID_PASSWORD.getMessage());
+           throw new InvalidPasswordException(JsonUtil.toJson(TransactionStatus.SENHA_INVALIDA));
        }
     }
 
     private void validateSufficientBalance(final BigDecimal amount) {
         if(amount.compareTo(cardEntity.getBalance()) > 0) {
-            throw new InsufficientBalanceException(TransactionStatus.INSUFFICIENT_BALANCE.getMessage());
+            throw new InsufficientBalanceException(JsonUtil.toJson(TransactionStatus.SALDO_INSUFICIENTE));
         }
     }
 }

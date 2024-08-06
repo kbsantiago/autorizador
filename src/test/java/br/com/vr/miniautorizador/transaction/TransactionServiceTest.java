@@ -2,7 +2,7 @@ package br.com.vr.miniautorizador.transaction;
 
 import br.com.vr.miniautorizador.card.CardEntity;
 import br.com.vr.miniautorizador.card.CardService;
-import br.com.vr.miniautorizador.common.constants.MsgProperties;
+import br.com.vr.miniautorizador.card.exceptions.CardNotFoundException;
 import br.com.vr.miniautorizador.transaction.exceptions.InsufficientBalanceException;
 import br.com.vr.miniautorizador.transaction.exceptions.InvalidCardException;
 import br.com.vr.miniautorizador.transaction.exceptions.InvalidPasswordException;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -34,17 +33,16 @@ class TransactionServiceTest {
 
     private CardEntity cardEntity;
 
-    @Value("${application.params.initialBalance}")
     private BigDecimal initialBalance;
 
     @BeforeEach
     public void setUp() {
-        initialBalance = BigDecimal.valueOf(500);
+        initialBalance = BigDecimal.valueOf(500.00);
         cardEntity = new CardEntity("1", "6549873025634501", "1234", initialBalance);
     }
 
     @Test
-    public void testExecuteTransaction_success() {
+    public void shouldExecuteTransactionSuccessfully() {
         Transaction transaction = new Transaction("1234567890123456", "1234", BigDecimal.valueOf(50.0));
         when(cardService.getByNumber("1234567890123456")).thenReturn(Optional.of(cardEntity));
         transactionService.executeTransaction(transaction);
@@ -52,28 +50,29 @@ class TransactionServiceTest {
     }
 
     @Test
-    public void testExecuteTransaction_invalidCard() {
+    public void shouldExecuteTransactionWithInvalidCardNumberError() {
         Transaction transaction = new Transaction("0000000000000000", "1234", BigDecimal.valueOf(50.0));
         when(cardService.getByNumber("0000000000000000")).thenReturn(Optional.empty());
+        doThrow(new CardNotFoundException("Card not found")).when(cardService).getByNumber("0000000000000000");
         assertThrows(InvalidCardException.class, () -> transactionService.executeTransaction(transaction));
     }
 
     @Test
-    public void testExecuteTransaction_invalidPassword() {
+    public void shouldExecuteTransactionWithInvalidPasswordError() {
         Transaction transaction = new Transaction("1234567890123456", "0000", BigDecimal.valueOf(50.0));
         when(cardService.getByNumber("1234567890123456")).thenReturn(Optional.of(cardEntity));
         assertThrows(InvalidPasswordException.class, () -> transactionService.executeTransaction(transaction));
     }
 
     @Test
-    public void testExecuteTransaction_insufficientBalance() {
+    public void shouldExecuteTransactionWithInsufficientBalanceError() {
         Transaction transaction = new Transaction("1234567890123456", "1234", BigDecimal.valueOf(2000.0));
         when(cardService.getByNumber("1234567890123456")).thenReturn(Optional.of(cardEntity));
         assertThrows(InsufficientBalanceException.class, () -> transactionService.executeTransaction(transaction));
     }
 
     @Test
-    public void testExecuteTransaction_raceCondition() throws InterruptedException {
+    public void shouldExecuteTransactionRaceCondition() throws InterruptedException {
         when(cardService.getByNumber("1234567890123456")).thenReturn(Optional.of(cardEntity));
 
         BigDecimal transactionAmount = BigDecimal.valueOf(10.0);
@@ -88,7 +87,7 @@ class TransactionServiceTest {
                     Transaction transaction = new Transaction("1234567890123456", "1234", transactionAmount);
                     transactionService.executeTransaction(transaction);
                 } catch (InsufficientBalanceException e) {
-                    throw new InsufficientBalanceException(TransactionStatus.INSUFFICIENT_BALANCE.getMessage());
+                    throw new InsufficientBalanceException(TransactionStatus.SALDO_INSUFICIENTE.name());
                 } finally {
                     latch.countDown();
                 }

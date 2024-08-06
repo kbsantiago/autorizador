@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -28,12 +27,11 @@ public class CardServiceTest {
 
     private CardEntity cardEntity;
 
-    @Value("${application.params.initialBalance}")
     private BigDecimal initialBalance;
 
     @BeforeEach
     void setUp() {
-        initialBalance = BigDecimal.valueOf(500);
+        initialBalance = BigDecimal.valueOf(500.00);
         cardEntity = new CardEntity("1", "6549873025634501", "1234", initialBalance);
     }
 

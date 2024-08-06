@@ -3,8 +3,8 @@ package br.com.vr.miniautorizador.card;
 import br.com.vr.miniautorizador.card.exceptions.CardAlreadyExistsException;
 import br.com.vr.miniautorizador.card.exceptions.CardNotFoundException;
 import br.com.vr.miniautorizador.common.constants.MsgProperties;
+import br.com.vr.miniautorizador.common.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,15 +13,15 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CardService {
+    private final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(500.00);
     private final CardRepository cardRepository;
-
-    ///@Value("${application.params.initialBalance}")
-    private final BigDecimal INITIAL_BALANCE = new BigDecimal(500);
 
     public Optional<CardEntity> create(final CardEntity cardEntity) {
         cardRepository.findByCardNumber(cardEntity.getCardNumber())
                 .ifPresent(card -> {
-                    throw new CardAlreadyExistsException(MsgProperties.CARD_ALREADY_EXISTS);
+                    throw new CardAlreadyExistsException(
+                            JsonUtil.toJson(CardMapper.INSTANCE.convertWithoutBalance(cardEntity))
+                    );
                 });
 
         cardEntity.setBalance(INITIAL_BALANCE);

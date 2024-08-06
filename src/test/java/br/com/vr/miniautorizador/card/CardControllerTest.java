@@ -1,6 +1,7 @@
 package br.com.vr.miniautorizador.card;
 
 import br.com.vr.miniautorizador.card.exceptions.CardAlreadyExistsException;
+import br.com.vr.miniautorizador.common.constants.MsgProperties;
 import br.com.vr.miniautorizador.common.security.WebSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,8 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -81,8 +85,9 @@ class CardControllerTest {
     }
 
     @Test
-    void shouldReturn422WhenCartaoAlreadyExists() throws Exception {
-        when(cardService.create(any(CardEntity.class))).thenThrow(new CardAlreadyExistsException("Card already exists"));
+    void shouldReturn422WhenCardAlreadyExists() throws Exception {
+        when(cardService.create(any(CardEntity.class))).thenThrow(
+                new CardAlreadyExistsException(MsgProperties.CARD_ALREADY_EXISTS));
 
         mockMvc.perform(post("/cartoes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +100,8 @@ class CardControllerTest {
     void shouldReturn422ForInvalidCardData() throws Exception {
         cardEntity = CardEntity.builder().cardNumber("invalidCardNumber").password("12").build();
         when(cardService.create(any(CardEntity.class))).thenReturn(Optional.of(cardEntity));
-        when(cardService.create(any(CardEntity.class))).thenThrow(new CardAlreadyExistsException("Card already exists"));
+        when(cardService.create(any(CardEntity.class))).thenThrow(
+                new CardAlreadyExistsException(MsgProperties.CARD_DOES_NOT_EXISTS));
 
         mockMvc.perform(post("/cartoes")
                         .contentType(MediaType.APPLICATION_JSON)

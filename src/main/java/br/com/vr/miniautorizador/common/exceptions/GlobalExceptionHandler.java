@@ -61,27 +61,31 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCardException.class)
-    ResponseEntity<Void> invalidCardException() {
-        return ResponseEntity.notFound().build();
+    ResponseEntity<String> invalidCardException(final InvalidCardException invalidCardException) {
+        return ResponseEntity.unprocessableEntity()
+                .body(invalidCardException.getMessage());
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    ResponseEntity<Void> invalidPasswordException() {
-        return ResponseEntity.unprocessableEntity().build();
+    ResponseEntity<String> invalidPasswordException(final InvalidPasswordException invalidPasswordException) {
+        return ResponseEntity.unprocessableEntity()
+                .body(invalidPasswordException.getMessage());
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    ResponseEntity<Void> insufficientBalanceException() {
-        return ResponseEntity.unprocessableEntity().build();
+    ResponseEntity<String> insufficientBalanceException(final InsufficientBalanceException insufficientBalanceException) {
+        return ResponseEntity.unprocessableEntity()
+                .body(insufficientBalanceException.getMessage());
     }
 
     @ExceptionHandler(CardAlreadyExistsException.class)
-    ResponseEntity<Void> cardAlreadyExistsException() {
-        return ResponseEntity.unprocessableEntity().build();
+    ResponseEntity<String> cardAlreadyExistsException(final CardAlreadyExistsException cardAlreadyExistsException) {
+        return ResponseEntity.unprocessableEntity()
+                .body(cardAlreadyExistsException.getMessage());
     }
 
     @ExceptionHandler(CardNotFoundException.class)
-    ResponseEntity<Void> CardNotFoundException() {
+    ResponseEntity<Error> CardNotFoundException() {
         return ResponseEntity.notFound().build();
     }
 }
