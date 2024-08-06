@@ -52,10 +52,11 @@ class TransactionServiceTest {
     @Test
     public void shouldExecuteTransactionWithInvalidCardNumberError() {
         Transaction transaction = new Transaction("0000000000000000", "1234", BigDecimal.valueOf(50.0));
-        when(cardService.getByNumber("0000000000000000")).thenReturn(Optional.empty());
+        //when(cardService.getByNumber("0000000000000000")).thenReturn(Optional.empty());
         doThrow(new CardNotFoundException("Card not found")).when(cardService).getByNumber("0000000000000000");
         assertThrows(InvalidCardException.class, () -> transactionService.executeTransaction(transaction));
     }
+
 
     @Test
     public void shouldExecuteTransactionWithInvalidPasswordError() {
